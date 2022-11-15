@@ -13,8 +13,6 @@ created: 2022-11-11
 
 An extension to the existing EIP-2981 NFT Royalty Standard that's aimed at providing a legal framework for NFT creators, in order to enforce their intellectual property rights properly, even when the royalty standard is not enforceable on-chain.
 
----
-
 
 ## Motivation
 
@@ -33,7 +31,6 @@ Likewise, it is no surprise NFT contracts without a proper license are considere
 - Even the NFT marketplaces that WANT to support NFT creators' rights have to come up with a far-from-optimal solution because they can no longer rely on benevolence of the others. They must assume that intellectual properties without a proper license will not be enforced.
 
 
----
 
 ## Specification
 
@@ -51,7 +48,6 @@ function licenseURI(uint tokenId) external view returns (string memory uri) {
 
 The URI string returned by `licenseURI()` may point to a license document that's legally binding, or may point to a document that simply describes a desired social contract expected by the asset holders and traders. Something along the lines of: "By owning this token, you agree that you will pay the royalty amount specified by the royaltyInfo() contract method for this tokenId."
 
----
 
 ### Examples
 
@@ -60,7 +56,6 @@ While it is possible to use mutable URIs such as `https://`, it is recommended t
 1. a content addressable URI such as GIT or IPFS URI, so that the creator cannot arbitrarily update them without leaving an on-chain evidence trail, but this is optional.
 2. or on-chain rendered URI, programmatically generated in a view function (similar to how some NFT projects use on-chain generated SVG logic to implement tokenURIs)
 
----
 
 #### 1. Content addressable URI
 
@@ -72,7 +67,6 @@ function licenseURI(uint tokenId) external view returns (string memory uri) {
 }
 ```
 
----
 
 #### 2. Onchain URI
 
@@ -88,7 +82,6 @@ function licenseURI(uint tokenId) external view returns (string memory uri) {
 }
 ```
 
----
 
 ## Rationale
 
@@ -105,7 +98,6 @@ Using the open source project analogy, the blacklist based royalty enforcement s
 
 This model not only discourages the intellectual property creators to share their work, but is NOT at all scalable if we assume that there will be all kinds of third party applications and contracts that interact with NFTs in the future in many different ways.
 
----
 
 ### 3rd Party Implementation
 
@@ -131,7 +123,6 @@ This is much more scalable than each individual NFT creator implementing some sp
 
 This is more decentralized, as it's up to each marketplace to decide whether to respect the license or not, and each marketplace can be held accountable for their decisions.
 
----
 
 ### Not just about negative reinforcement
 
@@ -139,7 +130,6 @@ The whole discussion around NFT royalties is centered around whether it is right
 
 If a marketplace disagrees with an NFT creator's view, they should be able to simply not list them on their marketplace. This is not necessarily a bad thing as long as there's a way for the NFT creator to publicly broadcast their intent. In the future there will be various ways of interacting with NFTs, and not all of them will be for respecting NFT royalties.
 
----
 
 ### Extensible
 
@@ -150,7 +140,6 @@ While this is titled as "Ricardian NFT Royalty", this same approach can be appli
 
 Basically it's a simple method that turns any smart contract into a Ricardian contract.
 
----
 
 ## Backwards Compatibility
 
@@ -158,16 +147,13 @@ This proposal is completely optional and backward compatible, which is why it's 
 
 Furthermore, the whole point of this proposal is to suggest a solution that DOES NOT break backwards compatibility. It provides a way to respect EIP-2981 royalty standard WITHOUT having to force NFT creators to add specialized logic catering to each and every NFT marketplace, which is impossible in many cases because sometimes they are mutually exclusive.
 
----
 
 ## Security Considerations
 
 There are no security considerations related directly to the implementation of this standard.
 
----
 
 ## Copyright
 
 Copyright and related rights waived via [CC0](https://eips.ethereum.org/LICENSE).
 
----
