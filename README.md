@@ -1,7 +1,7 @@
 ---
 title: Ricardian NFT Royalty
 description: Ricardian contract extension to ERC-721
-repo link: https://github.com/factoria-org/ricardian-royalty
+repo link: https://github.com/factoria-org/ricardian
 author: skogard <skogard@protonmail.com>
 status: Draft
 type: Standards Track
