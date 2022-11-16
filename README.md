@@ -119,16 +119,60 @@ function isListed(
   return license == "ipfs://bafkreiaxmbyabctzurpssf4wcki3lk3zuxpqdwwdc4dfdmwsq";
 }
 ```
+
 This is much more scalable than each individual NFT creator implementing some special logic in their contract.
 
 This is more decentralized, as it's up to each marketplace to decide whether to respect the license or not, and each marketplace can be held accountable for their decisions.
 
+### Why a new onchain interface instead of inside metadata
+
+We could imagine including the license URI in the NFT metadata, like the following:
+
+```json
+{
+  "name": "licensed NFT",
+  "description": "This is an example metadata for an NFT with a license",
+  "image": "ipfs://...",
+  "licenmse": "ipfs://..."  // The licenseURI
+}
+```
+
+The problem with this is, the `tokenURI` for each metadata will be different for every single NFT item, and there is no way to tell which license is being used by an item just by looking at `tokenURI`. The only way to detect the license is by:
+
+1. First fetching the metadata at `tokenURI`
+2. Second, parsing the metadata to get the `license` attribute
+
+This is:
+
+1. Inefficient and messy: because it requires offchain fetching
+2. Cannot be implemented onchain: because the "fetching" happens OUTSIDE of the blockchain. You can't build smart contract functions that take advantage of this approach.
+
+On the other hand, if we implement the license onchain using a designated onchain `licenseURI()` interface, the only thing that needs to be checked is the `licenseURI`. This is 100% onchain therefore can be used in smart contracts as well as offchain indexers and apps.
+
+Also, just like how open source licensing models have generally converged to a small number of popular ones such as MIT, Apache, GPL, etc., we expect a handful of popular NFT licenses to emerge, which means there will be only a handful of known license URIs to track if you are building an onchain app that talks to NFT contracts. Assuming that we are using content addressable URIs, implementing license onchain would be as simple as filtering based on known URIs, something like:
+
+```
+interface IRicardian {
+  function licenseURI(uint256 tokenId) external view returns (string memory);
+}
+mapping (string => bool) private supported; // a mapping with supported licenseURIs as keys and `true` as value
+function isListed(
+  addres collection,
+  uint tokenId
+) pubilc view returns (bool) {
+  string memory licenseURI = IRicardian(collection).licenseURI(tokenId);
+  return supported[licenseURI];
+}
+```
+
 
 ### Not just about negative reinforcement
 
-The whole discussion around NFT royalties is centered around whether it is right or not right to respect royalties. This is not the right question to ask. Instead, disagreements in views should be respected.
+The whole discussion around NFT royalties has been centered around whether it is right or not right to respect royalties. This is not the right question to ask. Instead, disagreements in views should be respected. Instead of making value judgments, all we need is a way for creators to communicate what they exactly want, and a deterministic way for 3rd parties to interpret and make decisions.
 
-If a marketplace disagrees with an NFT creator's view, they should be able to simply not list them on their marketplace. This is not necessarily a bad thing as long as there's a way for the NFT creator to publicly broadcast their intent. In the future there will be various ways of interacting with NFTs, and not all of them will be for respecting NFT royalties.
+If a marketplace disagrees with an NFT creator's view, they should be able to simply not list them on their marketplace. This is not necessarily a bad thing as long as there's a way for the NFT creator to publicly broadcast their intent.
+
+In the future there will be various ways of interacting with NFTs, and not all of them will be for respecting NFT royalties, and not all NFT types will need royalty enforcement. Also, some NFTs may want much more flexible and dynamic (such as programmable license document) license. Therefore a blacklist base approach will only fragment the ecosystem and suppress innovation. With the current proposal, creators can easily declare intent and each 3rd party app (such as marketplaces) can make independent decisions, such as only listing NFTs that are compatible with their policy. The NFT creators who do not wish for their NFTs to be listed on certain marketplaces should NOT have to declare "please don't list on this, this, and this marketplace", but simply declare "My NFTs should be treated in this, this, and this way. Otherwise you are breaching the license.".
 
 
 ### Extensible
